@@ -1,0 +1,87 @@
+<div class="min-h-screen flex flex-col md:flex-row">
+    <!-- Left Gradient Section -->
+    <div
+        class="relative overflow-hidden flex w-full md:w-1/2 bg-gradient-to-tr from-blue-800 to-purple-700 justify-around items-center py-10 md:py-0">
+        <div class="text-center md:text-left px-6">
+            <h1 class="text-white font-bold text-3xl md:text-4xl font-sans">GoFinance POS</h1>
+            <p class="text-white mt-2 text-sm md:text-base">The most Secure, Scalable Point of Sale checkout</p>
+            <button on-click="readMore()" type="button"
+                class="mx-auto md:mx-0 block w-32 bg-white text-indigo-800 mt-4 py-2 rounded-2xl font-bold mb-2">
+                Read More
+            </button>
+        </div>
+        <!-- Decorative Circles -->
+        <div
+            class="absolute -bottom-32 -left-40 w-80 h-80 border-4 rounded-full border-white border-opacity-30 border-t-8">
+        </div>
+        <div
+            class="absolute -bottom-40 -left-20 w-80 h-80 border-4 rounded-full border-white border-opacity-30 border-t-8">
+        </div>
+        <div
+            class="absolute -top-40 -right-0 w-80 h-80 border-4 rounded-full border-white border-opacity-30 border-t-8">
+        </div>
+        <div
+            class="absolute -top-20 -right-20 w-80 h-80 border-4 rounded-full border-white border-opacity-30 border-t-8">
+        </div>
+    </div>
+
+    <!-- Right Login Section -->
+    <div class="flex w-full md:w-1/2 justify-center items-center bg-white py-10 px-6">
+        <form class="w-full max-w-sm" (ngSubmit)="onSubmit()" #loginForm="ngForm">
+            <h1 class="text-gray-800 font-bold text-2xl mb-1">Hello Merchant!</h1>
+            <p class="text-sm font-normal text-gray-600 mb-7">Login with your email and password.</p>
+
+            <!-- Email -->
+            <div class="flex items-center border-2 py-2 px-3 rounded-2xl mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                </svg>
+                <input type="email" name="email" [(ngModel)]="email" required placeholder="Email Address"
+                    class="pl-2 outline-none border-none w-full" />
+            </div>
+            <small class="text-red-500" *ngIf="emailError">{{ emailError }}</small>
+
+            <!-- Password -->
+            <div class="flex items-center border-2 py-2 px-3 rounded-2xl mb-4 relative">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-2" fill="currentColor"
+                    viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                        d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                        clip-rule="evenodd" />
+                </svg>
+
+                <input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="password" required
+                    placeholder="Password" class="pl-2 pr-8 outline-none border-none w-full" />
+
+                <!-- Eye Icon Toggle -->
+                <button type="button" (click)="togglePassword()"
+                    class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <svg *ngIf="!showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    <svg *ngIf="showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.969 9.969 0 012.191-3.368m3.25-2.366A9.953 9.953 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.973 9.973 0 01-4.142 5.223M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18" />
+                    </svg>
+                </button>
+            </div>
+            <small class="text-red-500" *ngIf="passwordError">{{ passwordError }}</small>
+
+
+            <!-- Submit -->
+            <button type="submit"
+                class="block w-full bg-indigo-600 mt-4 py-2 rounded-2xl text-white font-semibold mb-2 hover:bg-indigo-700 transition">
+                Login
+            </button>
+            <span class="text-sm hover:text-blue-500 cursor-pointer block text-center">Forgot Password?</span>
+        </form>
+    </div>
+</div>

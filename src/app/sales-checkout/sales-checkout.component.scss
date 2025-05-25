@@ -1,0 +1,22 @@
+@keyframes scroll-left-to-right {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.animate-left-to-right {
+    animation: scroll-left-to-right 12s linear infinite;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+div,
+small,
+span,
+h3,p,input,label,h5{
+  font-family: 'Euclid Circular A';
+}
