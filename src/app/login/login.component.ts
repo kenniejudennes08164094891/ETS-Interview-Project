@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +17,8 @@ export class LoginComponent {
 
   constructor(
     private router:Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private toastr: ToastService
   ) { }
 
   onSubmit() {
@@ -34,6 +36,7 @@ export class LoginComponent {
     if (this.email && this.password) {
       // Handle login logic
       console.log('Login submitted:', { email: this.email, password: this.password });
+      this.toastr.openSnackBar("Login successful!","success");
       this.router.navigate(['/checkout'],{
         relativeTo: this.route,
         queryParams:{
