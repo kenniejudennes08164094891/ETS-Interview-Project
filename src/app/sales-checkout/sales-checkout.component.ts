@@ -3,6 +3,7 @@ import { imageIcons, SellableItem, sellableItems } from '../models/mocks';
 import { MatDialog } from '@angular/material/dialog';
 import { PaymentCheckoutComponent } from '../utilities/payment-checkout/payment-checkout.component';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-sales-checkout',
@@ -18,7 +19,8 @@ export class SalesCheckoutComponent {
   constructor(
     private dialog: MatDialog,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private toast: ToastService
   ) { }
 
   updateSelectedItems(event: any, index: number) {
@@ -47,7 +49,7 @@ export class SalesCheckoutComponent {
       queryParams: {
         detail: 'sales-checkout'
       }
-    })
+    }).then(() => this.toast.openSnackBar("You've Loggedout successfully!","success"))
   }
 
   // /receipt
