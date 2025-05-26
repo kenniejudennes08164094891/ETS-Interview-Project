@@ -16,6 +16,7 @@ import { CardFormatPipe } from './pipes/card-format.pipe';
 import { CardFormatDirective } from './directives/card-format.directive';
 import { MmExpiryFormatDirective } from './directives/mm-expiry-format.directive';
 import { ReceiptComponent } from './utilities/receipt/receipt.component';
+import { MonthDirective } from './directives/month.directive';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { ReceiptComponent } from './utilities/receipt/receipt.component';
     CardFormatPipe,
     CardFormatDirective,
     MmExpiryFormatDirective,
-    ReceiptComponent
+    ReceiptComponent,
+    MonthDirective
   ],
   imports: [
     BrowserModule,

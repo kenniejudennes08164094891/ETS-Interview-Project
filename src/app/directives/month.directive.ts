@@ -2,34 +2,33 @@ import { Directive, HostListener, ElementRef } from '@angular/core';
 import { NgControl } from '@angular/forms';
 
 @Directive({
-  selector: '[appMmExpiryFormat]'
+  selector: '[appMonth]'
 })
-export class MmExpiryFormatDirective {
+export class MonthDirective {
 
-  
-  constructor(private el: ElementRef, private control: NgControl) { }
+   constructor(private el: ElementRef, private control: NgControl) { }
 
+  // Ensures only numbers are input and value does not exceed 12
   @HostListener('input', ['$event']) onInputChange(event: Event): void {
     const input = this.el.nativeElement as HTMLInputElement;
     let cleaned = input.value.replace(/\D+/g, '');
-    const currentYear = new Date().getFullYear();
-    const minYear = currentYear % 100;
-    if (cleaned.length >= 6) {
-      const yy = cleaned.slice(4, 6);
-      const yyNumber = parseInt(yy, 10);
 
-      if (yyNumber < minYear) {
-        cleaned = cleaned.slice(0, 4) + minYear.toString().padStart(2, '0');
+    // Apply maximum value check (for MM, max is 12)
+    if (cleaned.length > 0) {
+      const numericValue = parseInt(cleaned, 10);
+      if (numericValue > 12) {
+        cleaned = '12';
+      } else if (numericValue === 0) {
+        cleaned = '01';
+      } else if (cleaned.length === 1 && numericValue > 1) {
+        // Auto-correct leading digits like 3 -> 03
+        cleaned = '0' + cleaned;
       }
-    }
-
-    if (cleaned.length > 6) {
-      cleaned = cleaned.slice(0, 6);
     }
 
     if (input.value !== cleaned) {
       input.value = cleaned;
-      this.control.control?.setValue(cleaned);
+      this.control.control?.setValue(cleaned); // sync model
       event.stopPropagation();
     }
   }

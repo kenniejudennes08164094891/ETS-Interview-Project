@@ -2,6 +2,8 @@ import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ToastService } from 'src/app/services/toast.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { EmmittersService } from 'src/app/services/emmitters.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-payment-checkout',
@@ -17,11 +19,16 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
   timeLeft: string = '01:00:00';
   private intervalId: any;
   private totalSeconds = 3600;
+  downloadText: string = "Process Payment Invoice";
+  invoiceParams: any = {};
+  showReceipt:boolean = false;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public dialogData: any,
     private dialogRef: MatDialogRef<PaymentCheckoutComponent>,
     private toast: ToastService,
+    private emmitterService: EmmittersService,
+    private router: Router
   ) {
     console.log("dialogData>>", dialogData);
   }
@@ -78,18 +85,84 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
     })
 
     this.cardPaymentForm = new FormGroup({
-      cardNumber: new FormControl('', [Validators.required, Validators.maxLength(16), Validators.minLength(16)]),
-      expiryDate: new FormControl('', [Validators.required]),
-      year: new FormControl('', [Validators.required, Validators.pattern('^(0[1-9]|1[0-2])$')]),
-      month: new FormControl('', [Validators.required,Validators.pattern('^\\d{2}$')]),
-      cvv: new FormControl('', [Validators.required]),
-      cardHolderName: new FormControl('', [Validators.required]),
+      cardNumber: new FormControl(null, [Validators.required, Validators.maxLength(16), Validators.minLength(16)]),
+      year: new FormControl(null, [Validators.required, Validators.pattern('^(0[1-9]|1[0-2])$')]),
+      month: new FormControl(null, [Validators.required, Validators.pattern('^\\d{2}$'), Validators.max(12)]),
+      cvv: new FormControl(null, [Validators.required]),
+      cardHolderName: new FormControl(null, [Validators.required]),
     })
   }
 
-  downloadPaymentInvoice() {
-    console.log("item>>", this.transfersForm.value);
+  hasEmptyOrNullValues(obj: any) {
+    const keys = Object.keys(obj);
+    for (const key of keys) {
+      const value = obj[key];
+      if (value === '' || value === null || typeof value === 'undefined') {
+        return true;
+      }
+    }
+    return false;
   }
 
+  async downloadPaymentInvoice() {
+    this.downloadText = "Processing...";
+   setTimeout(() => {
+     this.showReceipt = true;
+    let invalidCardDetails = this.hasEmptyOrNullValues(this.cardPaymentForm.value);
+    switch (this.paymentPlatform) {
+      case 'transfer':
+        if (this.transfersForm.valid) {
+          this.emmitterService.setCheckout({
+            checkedItems: this.dialogData.checkedItems,
+            metaDeta: {
+              amount: this.dialogData.totals,
+              paymentType: this.paymentPlatform,
+              ...this.transfersForm.value
+            }
+          });
+         // await this.router.navigateByUrl('/receipt');
+        } else {
+          this.toast.openSnackBar("Some fields are required!", "error");
+        }
+
+        break;
+      case 'card':
+        if (invalidCardDetails === false) {
+          this.emmitterService.setCheckout({
+            checkedItems: this.dialogData.checkedItems,
+            metaDeta: {
+              amount: this.dialogData.totals,
+              paymentType: this.paymentPlatform,
+              cardNumber: this.cardPaymentForm.get('cardNumber')?.value,
+              expiryDate: this.cardPaymentForm.get('month')?.value + "/" + this.cardPaymentForm.get('year')?.value,
+              cardHolderName: this.cardPaymentForm.get('cardHolderName')?.value,
+            }
+          });
+         // await this.router.navigateByUrl('/receipt');
+        } else {
+          this.toast.openSnackBar("Some fields are required!", "error");
+        }
+        break;
+      case 'cash':
+        this.emmitterService.setCheckout({
+          checkedItems: this.dialogData.checkedItems,
+          paymentType: this.paymentPlatform,
+          metaDeta: {
+            amount: this.dialogData.totals,
+            paymentType: this.paymentPlatform,
+            venue: "Payment via GoFinance Payment Agent in my viscinity"
+          }
+        });
+        //await this.router.navigateByUrl('/receipt');
+        break;
+      default:
+        this.toast.openSnackBar("Payment must be type Transfer, Cash or Card", "error");
+        this.downloadText = "Process Payment Invoice";
+        break;
+    }
+   },2000)
+  
+
+  }
 
 }
