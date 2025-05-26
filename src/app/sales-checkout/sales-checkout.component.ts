@@ -43,8 +43,8 @@ export class SalesCheckoutComponent {
     })
   }
 
-  logout(){
-    this.router.navigate(['/login'], {
+ async logout(){
+   await this.router.navigate(['/login'], {
       relativeTo: this.route,
       queryParams: {
         detail: 'sales-checkout'
@@ -52,5 +52,4 @@ export class SalesCheckoutComponent {
     }).then(() => this.toast.openSnackBar("You've Loggedout successfully!","success"))
   }
 
-  // /receipt
 }
