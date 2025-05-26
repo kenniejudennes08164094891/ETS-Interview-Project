@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { PaymentCheckoutComponent } from '../utilities/payment-checkout/payment-checkout.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastService } from '../services/toast.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-sales-checkout',
@@ -20,7 +21,8 @@ export class SalesCheckoutComponent {
     private dialog: MatDialog,
     private router: Router,
     private route: ActivatedRoute,
-    private toast: ToastService
+    private toast: ToastService,
+    private authService: AuthService
   ) { }
 
   updateSelectedItems(event: any, index: number) {
@@ -44,12 +46,9 @@ export class SalesCheckoutComponent {
   }
 
  async logout(){
-   await this.router.navigate(['/login'], {
-      relativeTo: this.route,
-      queryParams: {
-        detail: 'sales-checkout'
-      }
-    }).then(() => this.toast.openSnackBar("You've Loggedout successfully!","success"))
+  await this.authService.userMockLogout().then(() => {
+    this.toast.openSnackBar("You've Loggedout successfully!","success");
+  })
   }
 
 }

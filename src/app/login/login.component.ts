@@ -1,14 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastService } from '../services/toast.service';
+import { AuthService } from '../services/auth.service';
+// import { authGuard } from '../guards/auth.guard';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   email: string = '';
   password: string = '';
   emailError: string = '';
@@ -16,9 +18,10 @@ export class LoginComponent {
   showPassword: boolean = false;
 
   constructor(
-    private router:Router,
+    private router: Router,
     private route: ActivatedRoute,
-    private toastr: ToastService
+    private toastr: ToastService,
+    private authService: AuthService
   ) { }
 
   onSubmit() {
@@ -35,14 +38,19 @@ export class LoginComponent {
 
     if (this.email && this.password) {
       // Handle login logic
-      console.log('Login submitted:', { email: this.email, password: this.password });
-      this.toastr.openSnackBar("Login successful!","success");
-      this.router.navigate(['/checkout'],{
-        relativeTo: this.route,
-        queryParams:{
-          detail: 'sales-checkout'
+      this.authService.setUserToken({ email: this.email, password: this.password }).subscribe({
+        next: (response: any) => {
+          console.log("response>>",response)
+          this.toastr.openSnackBar(response?.message, "success", 4000);
+          this.router.navigate(['/checkout'], {
+            relativeTo: this.route,
+            queryParams: {
+              detail: 'sales-checkout'
+            }
+          })
         }
       })
+
     }
   }
 
@@ -53,4 +61,20 @@ export class LoginComponent {
   readMore() {
     window.open('https://www.aairlabs.com/', '_blank');
   }
+
+  userLogoutBeforeLeaving() {
+    if (
+      this.authService.userIsLoggedIn() && true 
+    ) {
+      this.router.navigate(['/dashboard/statistics'], {
+        relativeTo: this.route
+      }
+      );
+    }
+  }
+
+  ngOnInit(): void {
+    this.userLogoutBeforeLeaving();
+  }
+
 }
