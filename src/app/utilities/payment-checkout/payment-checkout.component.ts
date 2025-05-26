@@ -157,7 +157,7 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
             metaDeta: {
               amount: this.dialogData.totals,
               paymentType: this.paymentPlatform,
-              venue: "Payment via GoFinance Payment Agent in my viscinity"
+              venue: "Payment via GoFinance Payment Agent, Lekki Admiralty way."
             }
           });
           //await this.router.navigateByUrl('/receipt');
