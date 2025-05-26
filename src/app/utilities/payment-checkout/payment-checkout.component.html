@@ -134,15 +134,17 @@
     </div>
 
     <div *ngIf="showPaymentMethod">
-      <button (click)="downloadPaymentInvoice()" class="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700">{{downloadText}}</button>
+      <button (click)="showPaymentInvoice()" class="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700">{{downloadText}}</button>
     </div>
 
   </section>
   <section *ngIf="showReceipt === true">
-    <app-receipt></app-receipt>
-    <button
+    <div #pdfContent id="pdfContent">
+      <app-receipt></app-receipt>
+    </div>
+    <button (click)="downloadPDF()"
       class="w-full mt-2 sm:w-auto bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition">
-     ⇩ Download Receipt
+     {{downloadReceipt}}
     </button>
   </section>
 </mat-dialog-content>

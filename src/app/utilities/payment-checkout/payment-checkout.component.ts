@@ -1,9 +1,13 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ToastService } from 'src/app/services/toast.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { EmmittersService } from 'src/app/services/emmitters.service';
 import { Router } from '@angular/router';
+// import * as html2pdf from 'html2pdf.js';
+import html2pdf from 'html2pdf.js';
+
+
 
 @Component({
   selector: 'app-payment-checkout',
@@ -21,7 +25,10 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
   private totalSeconds = 3600;
   downloadText: string = "Process Payment Invoice";
   invoiceParams: any = {};
-  showReceipt:boolean = false;
+  showReceipt: boolean = false;
+  downloadReceipt: string = "⇩ Download Receipt";
+
+  @ViewChild('pdfContent', { static: false }) pdfContent!: ElementRef;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public dialogData: any,
@@ -104,65 +111,82 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  async downloadPaymentInvoice() {
+  async showPaymentInvoice() {
     this.downloadText = "Processing...";
-   setTimeout(() => {
-     this.showReceipt = true;
-    let invalidCardDetails = this.hasEmptyOrNullValues(this.cardPaymentForm.value);
-    switch (this.paymentPlatform) {
-      case 'transfer':
-        if (this.transfersForm.valid) {
-          this.emmitterService.setCheckout({
-            checkedItems: this.dialogData.checkedItems,
-            metaDeta: {
-              amount: this.dialogData.totals,
-              paymentType: this.paymentPlatform,
-              ...this.transfersForm.value
-            }
-          });
-         // await this.router.navigateByUrl('/receipt');
-        } else {
-          this.toast.openSnackBar("Some fields are required!", "error");
-        }
-
-        break;
-      case 'card':
-        if (invalidCardDetails === false) {
-          this.emmitterService.setCheckout({
-            checkedItems: this.dialogData.checkedItems,
-            metaDeta: {
-              amount: this.dialogData.totals,
-              paymentType: this.paymentPlatform,
-              cardNumber: this.cardPaymentForm.get('cardNumber')?.value,
-              expiryDate: this.cardPaymentForm.get('month')?.value + "/" + this.cardPaymentForm.get('year')?.value,
-              cardHolderName: this.cardPaymentForm.get('cardHolderName')?.value,
-            }
-          });
-         // await this.router.navigateByUrl('/receipt');
-        } else {
-          this.toast.openSnackBar("Some fields are required!", "error");
-        }
-        break;
-      case 'cash':
-        this.emmitterService.setCheckout({
-          checkedItems: this.dialogData.checkedItems,
-          paymentType: this.paymentPlatform,
-          metaDeta: {
-            amount: this.dialogData.totals,
-            paymentType: this.paymentPlatform,
-            venue: "Payment via GoFinance Payment Agent in my viscinity"
+    setTimeout(() => {
+      this.showReceipt = true;
+      let invalidCardDetails = this.hasEmptyOrNullValues(this.cardPaymentForm.value);
+      switch (this.paymentPlatform) {
+        case 'transfer':
+          if (this.transfersForm.valid) {
+            this.emmitterService.setCheckout({
+              checkedItems: this.dialogData.checkedItems,
+              metaDeta: {
+                amount: this.dialogData.totals,
+                paymentType: this.paymentPlatform,
+                ...this.transfersForm.value
+              }
+            });
+            // await this.router.navigateByUrl('/receipt');
+          } else {
+            this.toast.openSnackBar("Some fields are required!", "error");
           }
-        });
-        //await this.router.navigateByUrl('/receipt');
-        break;
-      default:
-        this.toast.openSnackBar("Payment must be type Transfer, Cash or Card", "error");
-        this.downloadText = "Process Payment Invoice";
-        break;
-    }
-   },2000)
-  
 
+          break;
+        case 'card':
+          if (invalidCardDetails === false) {
+            this.emmitterService.setCheckout({
+              checkedItems: this.dialogData.checkedItems,
+              metaDeta: {
+                amount: this.dialogData.totals,
+                paymentType: this.paymentPlatform,
+                cardNumber: this.cardPaymentForm.get('cardNumber')?.value,
+                expiryDate: this.cardPaymentForm.get('month')?.value + "/" + this.cardPaymentForm.get('year')?.value,
+                cardHolderName: this.cardPaymentForm.get('cardHolderName')?.value,
+              }
+            });
+            // await this.router.navigateByUrl('/receipt');
+          } else {
+            this.toast.openSnackBar("Some fields are required!", "error");
+          }
+          break;
+        case 'cash':
+          this.emmitterService.setCheckout({
+            checkedItems: this.dialogData.checkedItems,
+            paymentType: this.paymentPlatform,
+            metaDeta: {
+              amount: this.dialogData.totals,
+              paymentType: this.paymentPlatform,
+              venue: "Payment via GoFinance Payment Agent in my viscinity"
+            }
+          });
+          //await this.router.navigateByUrl('/receipt');
+          break;
+        default:
+          this.toast.openSnackBar("Payment must be type Transfer, Cash or Card", "error");
+          this.downloadText = "Process Payment Invoice";
+          break;
+      }
+    }, 2000)
+
+  }
+
+  downloadPDF() {
+    this.downloadReceipt = "Processing...";
+    setTimeout(() => {
+      const options = {
+        margin: 0.5,
+        filename: 'document.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+
+      const content: HTMLElement = this.pdfContent.nativeElement;
+
+      html2pdf().from(content).set(options).save();
+      this.downloadReceipt = "⇩ Download Receipt";
+    }, 1000);
   }
 
 }
