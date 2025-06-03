@@ -23,7 +23,7 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
   timeLeft: string = '01:00:00';
   private intervalId: any;
   private totalSeconds = 3600;
-  downloadText: string = "Process Payment Invoice";
+  downloadText: string = "Process Payment";
   invoiceParams: any = {};
   showReceipt: boolean = false;
   downloadReceipt: string = "⇩ Download Receipt";
@@ -164,7 +164,7 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
           break;
         default:
           this.toast.openSnackBar("Payment must be type Transfer, Cash or Card", "error");
-          this.downloadText = "Process Payment Invoice";
+          this.downloadText = "Process Payment";
           break;
       }
     }, 2000)

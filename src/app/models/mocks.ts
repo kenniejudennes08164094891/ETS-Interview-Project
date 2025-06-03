@@ -7,6 +7,11 @@ export interface SellableItem {
   image?: string
 }
 
+export interface User{
+  email: string | any,
+  password: string | any
+}
+
 export const sellableItems = [
   { name: 'Anova Syrup', price: 5000, image: 'https://flowbite.s3.amazonaws.com/docs/gallery/square/image.jpg' },
   { name: 'Classic Footwares', price: 7000, image: 'https://flowbite.s3.amazonaws.com/docs/gallery/square/image-1.jpg' },
@@ -24,4 +29,9 @@ export const sellableItems = [
 
 export const imageIcons = {
   atmCards: 'assets/images/atm-card.png',
+}
+
+export const loginCredentials = {
+  email: "test@airlabs.com",
+  password: "password"
 }

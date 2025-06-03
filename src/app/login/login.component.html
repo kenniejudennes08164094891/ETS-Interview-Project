@@ -1,5 +1,4 @@
 <div class="min-h-screen flex flex-col md:flex-row">
-    <!-- Left Gradient Section -->
     <div
         class="relative overflow-hidden flex w-full md:w-1/2 bg-gradient-to-tr from-blue-800 to-purple-700 justify-around items-center py-10 md:py-0">
         <div class="text-center md:text-left px-6">
@@ -10,7 +9,7 @@
                 Read More
             </button>
         </div>
-        <!-- Decorative Circles -->
+   
         <div
             class="absolute -bottom-32 -left-40 w-80 h-80 border-4 rounded-full border-white border-opacity-30 border-t-8">
         </div>
@@ -25,7 +24,7 @@
         </div>
     </div>
 
-    <!-- Right Login Section -->
+   
     <div class="flex w-full md:w-1/2 justify-center items-center bg-white py-10 px-6">
         <form class="w-full max-w-sm" (ngSubmit)="onSubmit()" #loginForm="ngForm">
             <h1 class="text-gray-800 font-bold text-2xl mb-1">Hello Merchant!</h1>
@@ -55,7 +54,7 @@
                 <input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="password" required
                     placeholder="Password" class="pl-2 pr-8 outline-none border-none w-full" />
 
-                <!-- Eye Icon Toggle -->
+               
                 <button type="button" (click)="togglePassword()"
                     class="absolute right-3 top-1/2 transform -translate-y-1/2">
                     <svg *ngIf="!showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500"
@@ -76,12 +75,11 @@
             <small class="text-red-500" *ngIf="passwordError">{{ passwordError }}</small>
 
 
-            <!-- Submit -->
-            <button type="submit"
+         
+            <button type="submit" [ngStyle]="{ 'background-color': (email && password) ? '#5850EC' : '#CDD5DF' }" [disabled]="!email || !password"
                 class="block w-full bg-indigo-600 mt-4 py-2 rounded-2xl text-white font-semibold mb-2 hover:bg-indigo-700 transition">
-                Login
+                 {{submitText}}
             </button>
-            <span class="text-sm hover:text-blue-500 cursor-pointer block text-center">Forgot Password?</span>
         </form>
     </div>
 </div>

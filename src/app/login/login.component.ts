@@ -11,11 +11,13 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-  email: string = '';
-  password: string = '';
+  email: string | null = null;
+  password: string | null = null;
   emailError: string = '';
   passwordError: string = '';
   showPassword: boolean = false;
+  submitText: string = "Login";
+  disableBtn: boolean = true;
 
   constructor(
     private router: Router,
@@ -25,6 +27,7 @@ export class LoginComponent implements OnInit {
   ) { }
 
   onSubmit() {
+    this.submitText = "processing...";
     this.emailError = '';
     this.passwordError = '';
 
@@ -38,18 +41,28 @@ export class LoginComponent implements OnInit {
 
     if (this.email && this.password) {
       // Handle login logic
-      this.authService.setUserToken({ email: this.email, password: this.password }).subscribe({
-        next: (response: any) => {
-          console.log("response>>",response)
-          this.toastr.openSnackBar(response?.message, "success", 4000);
-          this.router.navigate(['/checkout'], {
-            relativeTo: this.route,
-            queryParams: {
-              detail: 'sales-checkout'
+      setTimeout(() => {
+        this.authService.setUserToken({ email: this.email, password: this.password }).subscribe({
+          next: (response: any) => {
+            this.submitText = "Login";
+            if (response.statusCode === 200) {
+              this.toastr.openSnackBar(response?.message, "success", 4000);
+              this.router.navigate(['/checkout'], {
+                relativeTo: this.route,
+                queryParams: {
+                  detail: 'sales-checkout'
+                }
+              })
+            } else {
+              this.toastr.openSnackBar(response?.message, "error", 4000);
             }
-          })
-        }
-      })
+
+          },
+          error: (err: any) => {
+            this.toastr.openSnackBar(err, "error", 4000);
+          }
+        })
+      }, 2000);
 
     }
   }
@@ -64,7 +77,7 @@ export class LoginComponent implements OnInit {
 
   userLogoutBeforeLeaving() {
     if (
-      this.authService.userIsLoggedIn() && true 
+      this.authService.userIsLoggedIn() && true
     ) {
       this.router.navigate(['/dashboard/statistics'], {
         relativeTo: this.route
